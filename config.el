@@ -33,7 +33,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 
-(load-theme 'doom-dark+ t)
+(load-theme 'doom-ir-black t)
 (setq doom-themes-treemacs-theme "doom-colors")
 (doom-themes-treemacs-config)
 ; This determines the style of line numbers in effect. If set to `nil', line
@@ -41,7 +41,8 @@
 (setq display-line-numbers-type t)
 (setq kill-whole-line t)
 (setq lsp-enable-file-watchers nil)
-
+;; (add-hook 'scala-mode-hook #'format-all-mode)
+;; (setq-hook! 'scala-mode-hook +format-with-lsp nil)
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
