@@ -36,16 +36,19 @@
 (load-theme 'doom-ir-black t)
 (setq doom-themes-treemacs-theme "doom-colors")
 (doom-themes-treemacs-config)
+(add-hook 'markdown-mode-hook 'auto-fill-mode)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 ; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 (setq kill-whole-line t)
-(setq lsp-enable-file-watchers nil)
+(setq lsp-enable-file-watchers nil) ;; better performance on large repos
 ;; (add-hook 'scala-mode-hook #'format-all-mode)
 ;; (setq-hook! 'scala-mode-hook +format-with-lsp nil)
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
+(with-eval-after-load 'dired (define-key dired-mode-map "c" 'find-file))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
