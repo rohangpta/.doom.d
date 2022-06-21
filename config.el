@@ -36,19 +36,14 @@
 (load-theme 'doom-ir-black t)
 (setq doom-themes-treemacs-theme "doom-colors")
 (doom-themes-treemacs-config)
-(add-hook 'markdown-mode-hook 'auto-fill-mode)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 ; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 (setq kill-whole-line t)
-(setq lsp-enable-file-watchers nil) ;; better performance on large repos
-;; (add-hook 'scala-mode-hook #'format-all-mode)
-;; (setq-hook! 'scala-mode-hook +format-with-lsp nil)
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
-(with-eval-after-load 'dired (define-key dired-mode-map "c" 'find-file))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
@@ -81,6 +76,23 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+(after! dired
+  (define-key dired-mode-map "c" 'find-file))
+
+(after! markdown-mode
+  (add-hook 'markdown-mode-hook 'auto-fill-mode))
+
+
+;; Some monorepo specific config, ported to .dir-locals.el but potentially useful
+;; in the future
+;;
+;; (after! lsp-mode
+;;   (setq lsp-enable-file-watchers nil)) better performance on large repos
+
+;; (after! magit better performance on large repos
+;;   (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
+;;   (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers))
 
 (setq projectile-project-search-path '(("~/Deskop/Developer" . 2)))
 
