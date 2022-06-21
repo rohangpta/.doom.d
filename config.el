@@ -84,17 +84,42 @@
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
 
 
-;; Some monorepo specific config, ported to .dir-locals.el but potentially useful
-;; in the future
-;;
-;; (after! lsp-mode
-;;   (setq lsp-enable-file-watchers nil)) better performance on large repos
+;; some monorepo specific config, potentially useful in the future
+;; dir locals doesn't work well with minor modes, shelving this move for now
 
-;; (after! magit better performance on large repos
-;;   (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
-;;   (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers))
+(after! lsp-mode
+  (setq lsp-enable-file-watchers nil))
+
+(after! magit
+  (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers))
 
 (setq projectile-project-search-path '(("~/Deskop/Developer" . 2)))
+
+
+;; reload dir locals on save
+
+(defun reload-dir-locals-current ()
+  (interactive)
+  (let ((enable-local-variables :all))
+    (hack-dir-local-variables-non-file-buffer)))
+
+(defun reload-dir-locals ()
+  (interactive)
+  (let ((dir default-directory))
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+        (when (equal default-directory dir)
+          (reload-dir-locals-current))))))
+
+(add-hook 'emacs-lisp-mode-hook
+          (defun enable-autoreload-for-dir-locals ()
+            (when (and (buffer-file-name)
+                       (equal dir-locals-file
+                              (file-name-nondirectory (buffer-file-name))))
+              (add-hook 'after-save-hook
+                        'reload-dir-locals
+                        nil t))))
 
 (use-package! lsp-metals
   :ensure t
