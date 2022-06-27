@@ -37,6 +37,7 @@
 (setq doom-themes-treemacs-theme "doom-colors")
 (doom-themes-treemacs-config)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(global-tree-sitter-mode)
 ; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
@@ -44,7 +45,7 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
-
+(setq display-line-numbers-type 'relative)
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
@@ -83,6 +84,8 @@
 (after! markdown-mode
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
 
+(after! flycheck
+  (setq-default flycheck-disabled-checkers '(python-pylint)))
 
 ;; some monorepo specific config, potentially useful in the future
 ;; dir locals doesn't work well with minor modes, shelving this move for now
