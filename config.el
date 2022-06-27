@@ -99,6 +99,9 @@
 
 (setq projectile-project-search-path '(("~/Deskop/Developer" . 2)))
 
+;; don't want java formatting
+(add-hook! 'java-mode-hook
+  (format-all-mode -1))
 
 ;; reload dir locals on save
 
