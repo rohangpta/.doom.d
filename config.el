@@ -35,7 +35,7 @@
 
 (load-theme 'doom-dark+ t)
 (setq doom-themes-treemacs-theme "doom-colors")
-(setq doom-font "-*-Menlo-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1")
+(setq doom-font "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
 
 (doom-themes-treemacs-config)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -78,9 +78,6 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
-
-(after! dired
-  (define-key dired-mode-map "c" 'find-file))
 
 (after! markdown-mode
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
