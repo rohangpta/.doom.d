@@ -50,3 +50,9 @@
 ;(unpin! t)
 (package! lsp-metals)
 (package! lsp-pyright)
+
+(package! haskell-mode)
+(package! lsp-haskell)
+
+(package! vterm
+  :pin "d6fcd38b9544dd4d05dbe5db10e950043b68de9c")

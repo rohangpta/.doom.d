@@ -91,11 +91,7 @@
 (after! lsp-mode
   (setq lsp-enable-file-watchers nil))
 
-(after! magit
-  (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
-  (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers))
-
-(setq projectile-project-search-path '(("~/Deskop/Developer" . 2)))
+(setq projectile-project-search-path '(("~/Desktop/Developer/" . 3) ("~/Desktop/S23/" . 3)))
 
 ;; don't want java formatting
 (add-hook! 'java-mode-hook
@@ -156,3 +152,6 @@ apps are not started from a shell."
   ;; emacs can use indentation provided by scala-mode.
   (lsp-metals-server-args '("-J-Dmetals.allow-multiline-string-formatting=off"))
   :hook (scala-mode . lsp))
+
+(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+(setq haskell-process-type 'cabal-repl)
