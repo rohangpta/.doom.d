@@ -89,7 +89,22 @@
 ;; dir locals doesn't work well with minor modes, shelving this move for now
 
 (after! lsp-mode
-  (setq lsp-enable-file-watchers nil))
+  (setq lsp-enable-file-watchers nil)
+        (lsp-register-client
+        (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
+                        :major-modes '(c-mode c++-mode)
+                        :remote? t
+                        :server-id 'clangd-remote)))
+
+(after! tramp
+ (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
+(use-package projectile
+  :ensure t
+  :init
+  (require 'tramp)
+  (projectile-mode +1))
+
 
 (setq projectile-project-search-path '(("~/Desktop/Developer/" . 3) ("~/Desktop/S23/" . 3)))
 
@@ -111,6 +126,7 @@
       (with-current-buffer buffer
         (when (equal default-directory dir)
           (reload-dir-locals-current))))))
+
 
 (add-hook 'emacs-lisp-mode-hook
           (defun enable-autoreload-for-dir-locals ()
