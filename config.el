@@ -78,6 +78,39 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+;;
+;;
+(defun lsp-tramp-connection (local-command &optional generate-error-file-fn)
+  "Create LSP stdio connection named name.
+LOCAL-COMMAND is either list of strings, string or function which
+returns the command to execute."
+  ;; Force a direct asynchronous process.
+  (add-to-list 'tramp-connection-properties
+               (list (regexp-quote (file-remote-p default-directory))
+                     "direct-async-process" t))
+  (list :connect (lambda (filter sentinel name environment-fn)
+                   (let* ((final-command (lsp-resolve-final-function
+local-command))
+                          (_stderr (or (when generate-error-file-fn
+                                        (funcall generate-error-file-fn name))
+                                      (format "/tmp/%s-%s-stderr" name
+                                              (cl-incf lsp--stderr-index))))
+                          (process-name (generate-new-buffer-name name))
+                          (process-environment
+                           (lsp--compute-process-environment environment-fn))
+                          (proc (make-process
+                                 :name process-name
+                                 :buffer (format "*%s*" process-name)
+                                 :command final-command
+                                 :connection-type 'pipe
+                                 :coding 'no-conversion
+                                 :noquery t
+                                 :filter filter
+                                 :sentinel sentinel
+                                 :file-handler t)))
+                     (cons proc proc)))
+        :test? (lambda () (-> local-command lsp-resolve-final-function
+lsp-server-present?))))
 
 (after! markdown-mode
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
@@ -89,6 +122,7 @@
 ;; dir locals doesn't work well with minor modes, shelving this move for now
 
 (after! lsp-mode
+  (setq lsp-log-io t)
   (setq lsp-enable-file-watchers nil)
         (lsp-register-client
         (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
