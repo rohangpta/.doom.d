@@ -80,55 +80,12 @@
 ;; they are implemented.
 ;;
 ;;
-(defun lsp-tramp-connection (local-command &optional generate-error-file-fn)
-  "Create LSP stdio connection named name.
-LOCAL-COMMAND is either list of strings, string or function which
-returns the command to execute."
-  ;; Force a direct asynchronous process.
-  (add-to-list 'tramp-connection-properties
-               (list (regexp-quote (file-remote-p default-directory))
-                     "direct-async-process" t))
-  (list :connect (lambda (filter sentinel name environment-fn)
-                   (let* ((final-command (lsp-resolve-final-function
-local-command))
-                          (_stderr (or (when generate-error-file-fn
-                                        (funcall generate-error-file-fn name))
-                                      (format "/tmp/%s-%s-stderr" name
-                                              (cl-incf lsp--stderr-index))))
-                          (process-name (generate-new-buffer-name name))
-                          (process-environment
-                           (lsp--compute-process-environment environment-fn))
-                          (proc (make-process
-                                 :name process-name
-                                 :buffer (format "*%s*" process-name)
-                                 :command final-command
-                                 :connection-type 'pipe
-                                 :coding 'no-conversion
-                                 :noquery t
-                                 :filter filter
-                                 :sentinel sentinel
-                                 :file-handler t)))
-                     (cons proc proc)))
-        :test? (lambda () (-> local-command lsp-resolve-final-function
-lsp-server-present?))))
 
 (after! markdown-mode
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
 
 (after! flycheck
   (setq-default flycheck-disabled-checkers '(python-pylint)))
-
-;; some monorepo specific config, potentially useful in the future
-;; dir locals doesn't work well with minor modes, shelving this move for now
-
-(after! lsp-mode
-  (setq lsp-log-io t)
-  (setq lsp-enable-file-watchers nil)
-        (lsp-register-client
-        (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
-                        :major-modes '(c-mode c++-mode)
-                        :remote? t
-                        :server-id 'clangd-remote)))
 
 (after! tramp
  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
@@ -142,12 +99,12 @@ lsp-server-present?))))
 
 (setq projectile-project-search-path '(("~/Desktop/Developer/" . 3) ("~/Desktop/S23/" . 3)))
 
-;; don't want java formatting
+;; Don't want Java formatting
+
 (add-hook! 'java-mode-hook
   (format-all-mode -1))
 
-;; reload dir locals on save
-
+;; Reload dir locals on save
 (defun reload-dir-locals-current ()
   (interactive)
   (let ((enable-local-variables :all))
@@ -161,7 +118,13 @@ lsp-server-present?))))
         (when (equal default-directory dir)
           (reload-dir-locals-current))))))
 
+;; Kill vterm buffer on exit
+(setq vterm-kill-buffer-on-exit t)
 
+;; Ignore visual text in the kill ring
+(setq evil-kill-on-visual-paste nil)
+
+;; Lisp mode config with dir-locals.el
 (add-hook 'emacs-lisp-mode-hook
           (defun enable-autoreload-for-dir-locals ()
             (when (and (buffer-file-name)
@@ -170,6 +133,7 @@ lsp-server-present?))))
               (add-hook 'after-save-hook
                         'reload-dir-locals
                         nil t))))
+
 (defun set-exec-path-from-shell-PATH ()
   "Set up Emacs' `exec-path' and PATH environment variable to match
 that used by the user's shell.
@@ -193,6 +157,14 @@ apps are not started from a shell."
                           (require 'lsp-pyright)
                           (lsp))))  ; or lsp-deferred
 
+;; Close compilation window on exit code 0
+(defun compilation-exit-autoclose (status code msg)
+  (when (and (eq status 'exit) (zerop code))
+    (bury-buffer)
+    (delete-window (get-buffer-window (get-buffer "*compilation*"))))
+  (cons msg code))
+(setq compilation-exit-message-function 'compilation-exit-autoclose)
+
 ;; Scala config
 (use-package! lsp-metals
   :ensure t
@@ -203,5 +175,6 @@ apps are not started from a shell."
   (lsp-metals-server-args '("-J-Dmetals.allow-multiline-string-formatting=off"))
   :hook (scala-mode . lsp))
 
+;; Haskell config
 (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 (setq haskell-process-type 'cabal-repl)
