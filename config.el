@@ -37,16 +37,21 @@
 (setq doom-themes-treemacs-theme "doom-colors")
 (setq doom-font "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
 
+
 (doom-themes-treemacs-config)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (global-tree-sitter-mode)
 ; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
+;;
 (setq display-line-numbers-type 'relative)
 (setq kill-whole-line t)
+
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
+
+(setq org-directory "~/Desktop/Notes/")
+
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
@@ -84,9 +89,11 @@
 (after! markdown-mode
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
 
+;; Pylint is annoying
 (after! flycheck
   (setq-default flycheck-disabled-checkers '(python-pylint)))
 
+;; for LSP mode with tramp
 (after! tramp
  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
@@ -100,7 +107,6 @@
 (setq projectile-project-search-path '(("~/Desktop/Developer/" . 3) ("~/Desktop/S23/" . 3)))
 
 ;; Don't want Java formatting
-
 (add-hook! 'java-mode-hook
   (format-all-mode -1))
 
