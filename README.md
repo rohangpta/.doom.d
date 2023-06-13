@@ -1,7 +1,3 @@
 # .doom.d
 
-Personal doom settings:
-
-Language intergrations: (Python, Scala)
-
-WIP!
+Personal doom settings. Very much a work in progress.
